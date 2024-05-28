@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue 3 Simple Form</title>
+    <!-- 引入 Vue 3 -->
+    <!--<script src="https://unpkg.com/vue@next"></script>-->
+    <!--<script src="https://unpkg.com/vue@3.0.0/dist/vue.global.prod.js"></script>-->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        #app {
+            background-color: white;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        pre {
+            white-space: pre-wrap;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f7f7f7;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- 创建一个简单的表单 -->
+    <form @submit.prevent="submitForm">
+        <!-- 假设从服务器获取的响应中有一个名为 "name" 的字段 -->
+        <div>
+            <label for="name">姓名:{{ form.data.name }}</label>
+            <input type="text" id="name" v-model="form.data.name">
+        </div>
+
+        <!-- 更多表单字段可以按需添加 -->
+
+        <!-- 提交按钮 -->
+        <div>
+            <button type="submit">提交</button>
+        </div>
+    </form>
+
+    <!-- 用于显示获取的数据 -->
+    <pre>{{ JSON.stringify(form, null, 2) }}</pre>
+</div>
+
+
+<script>
+
+    var script = document.createElement("script");
+    script.src = "https://unpkg.com/vue@3.0.0/dist/vue.global.prod.js"
+
+   script.onload = function() {
+
+    //alert("xxxxxxxxxxxxx2222333");
+    //console.log(111111, window.Vue);
+    //debugger;
+
+    const { createApp, ref } = Vue;
+
+
+    createApp({
+        setup() {
+            const form = ref({"data":{}});
+
+            const fetchFormData = async () => {
+                try {
+                    const response = await fetch('http://localhost:8081/shapan/user/simple/getOne', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({"id": "1765714405488214017"})
+                    });
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    form.value = data;
+                    // form.value.name=data.name;
+                } catch (error) {
+                    console.error('Fetching form data failed:', error);
+                }
+            };
+
+            // 获取表单数据
+            fetchFormData();
+
+            const submitForm = () => {
+                // 在这里添加提交表单的逻辑
+                console.log('Form submitted:', form.value);
+            };
+
+            return {
+                form,
+                submitForm
+            };
+        }
+    }).mount('#app');
+    };
+
+    document.body.appendChild(script);
+</script>
+</body>
+</html>
